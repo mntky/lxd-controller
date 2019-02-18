@@ -6,21 +6,17 @@ import (
 	"github.com/lxc/lxd/shared/api"
 )
 
+//Connect to Unixsocket 
 func connect() (container lxd.ContainerServer) {
 
-	//connect to lxd over the unix socket
-	//c, err := lxd.ConnectLXDUnix("", nil)
-	//fmt.Println(c, err)
-	//if err != nil {
-	//	return err
-	//}
-
 	container, err := lxd.ConnectLXDUnix("", nil)
-	fmt.Println(err)
-	return 
-
+	if err != nil {
+		fmt.Println(err)
+	}
+	return
 }
 
+//Create container 
 func create(container lxd.ContainerServer) {
 
 	//container creation request
@@ -31,21 +27,85 @@ func create(container lxd.ContainerServer) {
 			Alias: "debian",
 		},
 	}
-	fmt.Println(req)
 
 	op, err := container.CreateContainer(req)
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	err = op.Wait()
-
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
+//Start Container 
+func start(name string, container lxd.ContainerServer) {
+	reqState := api.ContainerStatePut{
+		Action: "start",
+		Timeout: -1,
+	}
 
+	op, err := container.UpdateContainerState(name, reqState, "")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = op.Wait()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+//Stop Container
+func stop(name string, container lxd.ContainerServer) {
+	reqState := api.ContainerStatePut{
+		Action: "stop",
+		Timeout: -1,
+	}
+
+	op, err := container.UpdateContainerState(name, reqState, "")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = op.Wait()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+//Delete Container
+//if doesnt stop the container , it will be panic
+func delete(name string, container lxd.ContainerServer) {
+	op, err := container.DeleteContainer(name)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = op.Wait()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+//Get Container Status
+func status(name string, container lxd.ContainerServer) {
+	var stat *api.ContainerState
+
+	stat, str, err := container.GetContainerState(name)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println(str)
+	}
+	fmt.Println(*stat)
+}
 
 func main() {
-	fmt.Println("---LXD-API---")
 	c  := connect()
-	create(c)
+	//create(c)
+	//start("container-name", c)
+	//stop("container-name", c)
+	//status("container-name", c)
+	//delete("container-name", c)
 }
-
