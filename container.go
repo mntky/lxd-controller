@@ -22,6 +22,7 @@ type ContainerInfo struct {
 type Container struct {
 	server lxd.ContainerServer
 	info ContainerInfo
+	stat *api.ContainerState
 }
 
 func (c *Container)connect() {
@@ -47,3 +48,41 @@ func (c *Container)create() {
 	failOnError(err, "fail create container operation")
 }
 
+func (c *Container)start() {
+	reqState := api.ContainerStatePut {
+		Action: "start",
+		Timeout: -1,
+	}
+
+	op, err := c.server.UpdateContainerState(c.info.Name, reqState, "")
+	failOnError(err, "fail update container state")
+
+	err = op.Wait()
+	failOnError(err, "fail start container operation")
+}
+
+func (c *Container)stop() {
+	reqState := api.ContainerStatePut {
+		Action: "stop",
+		Timeout: -1,
+	}
+
+	op, err := c.server.UpdateContainerState(c.info.Name, reqState, "")
+	failOnError(err, "Fail update container state")
+
+	err = op.Wait()
+	failOnError(err, "Fail stop container operation")
+}
+
+func (c *Container)delete() {
+	op, err := c.server.DeleteContainer(c.info.Name)
+	failOnError(err, "Fail delete container")
+
+	err = op.Wait()
+	failOnError(err, "Fail delete container operation")
+}
+
+func (c *Container)status() {
+	c.stat, str, err := c.server.GetContainerState(c.info.Name)
+	failOnError(err, str)
+}
