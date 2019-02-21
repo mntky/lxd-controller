@@ -1,17 +1,9 @@
 package main
 
 import (
-	"log"
 	"github.com/lxc/lxd/client"
 	"github.com/lxc/lxd/shared/api"
 )
-
-func failOnError(err error, msg string){
-	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
-	}
-}
-
 
 type ContainerInfo struct {
 	Name	string	`json:"name"`
@@ -25,14 +17,17 @@ type Container struct {
 	stat *api.ContainerState
 }
 
-func (c *Container)connect() {
+func (c *Container)connect() (error){
 	var err error
 	c.server, err = lxd.ConnectLXDUnix("", nil)
-	failOnError(err, "fail connect LXD Unix")
-	return
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (c *Container)create() {
+func (c *Container)create() (error){
 	req := api.ContainersPost{
 		Name: c.info.Name,
 		Source: api.ContainerSource{
@@ -42,47 +37,78 @@ func (c *Container)create() {
 	}
 
 	op, err := c.server.CreateContainer(req)
-	failOnError(err, "fail create container")
+	if err != nil {
+		return err
+	}
 
 	err = op.Wait()
-	failOnError(err, "fail create container operation")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (c *Container)start() {
+func (c *Container)start() (error) {
 	reqState := api.ContainerStatePut {
 		Action: "start",
 		Timeout: -1,
 	}
 
 	op, err := c.server.UpdateContainerState(c.info.Name, reqState, "")
-	failOnError(err, "fail update container state")
+	if err != nil {
+		return err
+	}
 
 	err = op.Wait()
-	failOnError(err, "fail start container operation")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (c *Container)stop() {
+func (c *Container)stop() (error){
 	reqState := api.ContainerStatePut {
 		Action: "stop",
 		Timeout: -1,
 	}
 
 	op, err := c.server.UpdateContainerState(c.info.Name, reqState, "")
-	failOnError(err, "Fail update container state")
+	if err != nil {
+		return err
+	}
 
 	err = op.Wait()
-	failOnError(err, "Fail stop container operation")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (c *Container)delete() {
+func (c *Container)delete() (error){
 	op, err := c.server.DeleteContainer(c.info.Name)
-	failOnError(err, "Fail delete container")
+	if err != nil {
+		return err
+	}
 
 	err = op.Wait()
-	failOnError(err, "Fail delete container operation")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (c *Container)status() {
-	c.stat, str, err := c.server.GetContainerState(c.info.Name)
-	failOnError(err, str)
+func (c *Container)status() (string, error){
+	var (
+		str string
+		err error
+	)
+	c.stat, str, err = c.server.GetContainerState(c.info.Name)
+	if err != nil {
+		return str, err
+	}
+	return str, nil
 }
