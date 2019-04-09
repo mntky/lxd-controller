@@ -104,7 +104,7 @@ func status(name string, container lxd.ContainerServer) {
 func main() {
 	c  := connect()
 	//create(c)
-	//start("container-name", c)
+	start("container-name", c)
 	//stop("container-name", c)
 	//status("container-name", c)
 	//delete("container-name", c)
