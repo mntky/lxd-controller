@@ -106,6 +106,6 @@ func main() {
 	//create(c)
 	//start("container-name", c)
 	//stop("container-name", c)
-	//status("container-name", c)
+	status("debian", c)
 	//delete("container-name", c)
 }

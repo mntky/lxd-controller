@@ -11,3 +11,4 @@ go version go1.11.5 linux/amd64
 # go get -u github.com/streadway/amqp
 ```
 
+# unix.socketの環境変数 $LXD_SOCKET
