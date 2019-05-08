@@ -11,4 +11,9 @@ go version go1.11.5 linux/amd64
 # go get -u github.com/streadway/amqp
 ```
 
-# unix.socketの環境変数 $LXD_SOCKET
+## 環境変数
+```
+# snapで入れた場合のunix.socketの場所
+# /var/snap/lxd/common/lxd/unix.socket
+# $LXD_SOCKET
+```
