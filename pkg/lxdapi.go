@@ -38,12 +38,12 @@ func Create(name string, container lxd.ContainerServer) (string, error) {
 
 	op, err := container.CreateContainer(req)
 	if err != nil {
-		resp = "[Failed]"
+		resp = "[container create failed]"
 		return resp, err
 	}
 	err = op.Wait()
 	if err != nil {
-		resp = "[Failed]"
+		resp = "[create op.wait failed]"
 		return resp, err
 	}
 	return resp, err
@@ -53,12 +53,12 @@ func Delete(name string, container lxd.ContainerServer) (string, error) {
 	resp := "[Complete] delete" + name
 	op, err := container.DeleteContainer(name)
 	if err != nil{
-		resp = "[Failed]"
+		resp = "[container delete dailed]"
 		return resp, err
 	}
 	err = op.Wait()
 	if err != nil {
-		resp = "[Failed]"
+		resp = "[delete op.wait failed]"
 		return resp, err
 	}
 	return resp, err
@@ -73,12 +73,12 @@ func Start(name string, container lxd.ContainerServer) (string, error) {
 
 	op, err := container.UpdateContainerState(name, reqState, "")
 	if err != nil {
-		resp = "[Failed]"
+		resp = "[container start failed]"
 		return resp, err
 	}
 	err = op.Wait()
 	if err != nil {
-		resp = "[Failed]"
+		resp = "[start op.wait failed]"
 		return resp, err
 	}
 	return resp, err
@@ -93,12 +93,12 @@ func Stop(name string, container lxd.ContainerServer) (string, error) {
 
 	op, err := container.UpdateContainerState(name, reqState, "")
 	if err != nil {
-		resp = "[Failed]"
+		resp = "[container stop failed]"
 		return resp, err
 	}
 	err = op.Wait()
 	if err != nil {
-		resp = "[Failed]"
+		resp = "[stop op.wait failed]"
 		return resp, err
 	}
 	return resp, err
