@@ -26,13 +26,13 @@ func Status(name string, container lxd.ContainerServer) *api.ContainerState {
 	return stat
 }
 
-func Create(name string, container lxd.ContainerServer) (string, error) {
+func Create(name string, image string, container lxd.ContainerServer) (string, error) {
 	resp := "[Complete] create " + name
 	req := api.ContainersPost{
 		Name: name,
 		Source: api.ContainerSource{
 			Type: "image",
-			Alias: "debian",
+			Alias: image,
 		},
 	}
 
